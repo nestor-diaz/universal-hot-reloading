@@ -1,5 +1,5 @@
-import App from './components/App';
-import configureStore from './store';
+import App from '../client/components/App';
+import configureStore from '../client/store';
 import fs from 'fs';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -25,4 +25,4 @@ function renderApp(path, callback) {
   callback(null, page);
 }
 
-module.exports = renderApp;
+export default renderApp;

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import styles from './App.css';
 import { connect } from 'react-redux';
-import { hot } from 'react-hot-loader';
+// import { hot } from 'react-hot-loader';
 import PropTypes from 'prop-types';
 
 import Child from './Child';
@@ -11,7 +11,7 @@ class App extends Component {
     const { count, dispatch } = this.props;
     return (
       <div>
-        <h1>Demo</h1>
+        <h1>Demo 2</h1>
         <p>{count.num}</p>
         <button
           className={styles.increment}
@@ -33,4 +33,5 @@ App.propTypes = {
   dispatch: PropTypes.func.isRequired
 };
 
-export default hot(module)( connect(state => ({count: state}))(App) );
+export default connect(state => ({count: state}))(App);
+// export default hot(module)( connect(state => ({count: state}))(App) );
