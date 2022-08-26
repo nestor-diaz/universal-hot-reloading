@@ -4,7 +4,7 @@ import renderApp from './server-render';
 const app = express.Router();
 
 app.get('/whoami', (req, res) => {
-  res.send("You are a winner 11");
+  res.send("You are a winner 1");
 });
 
 // Anything else gets passed to the client app's server rendering

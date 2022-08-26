@@ -8,16 +8,15 @@ import webpackHotMiddleware from 'webpack-hot-middleware';
 import config from './webpack.client.config';
 import serverConfig from './webpack.server.config';
 
-const compiler = webpack(config);
-const compilerServer = webpack(serverConfig);
+const { hooks, compilers } = webpack([config, serverConfig]);
 const app = express();
 let server;
 
 // Serve hot-reloading bundle to client
-app.use(webpackDevMiddleware(compiler, {
+app.use(webpackDevMiddleware(compilers[0], {
   publicPath: config.output.publicPath
 }));
-app.use(webpackHotMiddleware(compiler));
+app.use(webpackHotMiddleware(compilers[0]));
 
 // Do "hot-reloading" of express stuff on the server
 // Throw away cached modules and re-require next time
@@ -36,8 +35,9 @@ app.use(webpackHotMiddleware(compiler));
 //   });
 // });
 
-compilerServer.hooks.afterEmit.tap('CompilerServer', () => {
-  console.log("Clearing /server/ module cache from server");
+hooks.done.tap('CompilerServer', (stats) => {
+  console.log(stats.toString());
+
   Object.keys(require.cache).forEach(function(id) {
     if (/[\/\\].app[\/\\]/.test(id)) {
       console.log('clearing cache for', id);
@@ -64,9 +64,7 @@ compilerServer.hooks.afterEmit.tap('CompilerServer', () => {
   }
 });
 
-compilerServer.watch({}, (err, stats) => {
-  console.log(stats.toString());
-});
+compilers[1].watch({}, () => {});
 
 // Anything else gets passed to the client app's server rendering
 // app.get('*', function(req, res, next) {

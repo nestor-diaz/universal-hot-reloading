@@ -8,6 +8,7 @@ process.env.NODE_ENV = process.env.NODE_ENV || "development";
 export default {
   target: 'web',
   mode: 'development',
+  stats: 'errors-only',
   entry: ['webpack-hot-middleware/client', './client/app.js'],
   output: {
     path: __dirname,

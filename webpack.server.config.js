@@ -6,6 +6,7 @@ module.exports = {
   mode: 'development',
   externals: [nodeExternals()],
   entry: './server/app.js',
+  stats: 'errors-only',
   output: {
     path: path.join(__dirname, '.app'),
     filename: 'bundle.js',
