@@ -8,7 +8,7 @@ app.get('/whoami', (req, res) => {
 });
 
 // Anything else gets passed to the client app's server rendering
-app.get('*', function(req, res, next) {
+app.get('*', (req, res, next) => {
   renderApp(req.path, function(err, page) {
     if (err) return next(err);
     res.send(page);

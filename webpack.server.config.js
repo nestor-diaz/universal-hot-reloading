@@ -6,7 +6,6 @@ module.exports = {
   mode: 'development',
   externals: [nodeExternals()],
   entry: './server/app.js',
-  stats: 'errors-only',
   output: {
     path: path.join(__dirname, '.app'),
     filename: 'bundle.js',
@@ -25,7 +24,7 @@ module.exports = {
             options: {
               include: path.join(__dirname, 'server'),
               exclude: /node_modules/,
-              plugins: ['react-refresh/babel']
+              compact: true
             }
           }
         ]

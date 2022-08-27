@@ -1,47 +1,55 @@
-// import chokidar from 'chokidar';
 import path from 'path';
 import express from 'express';
 import http from 'http';
 import webpack from 'webpack';
 import webpackDevMiddleware from 'webpack-dev-middleware';
 import webpackHotMiddleware from 'webpack-hot-middleware';
+import formatMessages from 'webpack-format-messages';
 import config from './webpack.client.config';
 import serverConfig from './webpack.server.config';
+import Log from './log';
 
-const { hooks, compilers } = webpack([config, serverConfig]);
+const { hooks, compilers: [clientCompiler, serverCompiler] } = webpack([config, serverConfig]);
+
+clientCompiler.hooks.beforeCompile.tap('CompilerServer', () => {
+  Log.wait('compiling client...');
+});
+
+serverCompiler.hooks.beforeCompile.tap('CompilerServer', () => {
+  Log.wait('compiling server...');
+});
+
 const app = express();
-let server;
 
 // Serve hot-reloading bundle to client
-app.use(webpackDevMiddleware(compilers[0], {
-  publicPath: config.output.publicPath
+app.use(webpackDevMiddleware(clientCompiler, {
+  publicPath: config.output.publicPath,
+  stats: "errors-only"
 }));
-app.use(webpackHotMiddleware(compilers[0]));
+app.use(webpackHotMiddleware(clientCompiler, { log: false }));
 
-// Do "hot-reloading" of express stuff on the server
-// Throw away cached modules and re-require next time
-// Ensure there's no important state in there!
-// const watcher = chokidar.watch('./server');
-
-// watcher.on('ready', function() {
-//   watcher.on('all', function() {
-//     console.log("Clearing /server/ module cache from server");
-//     Object.keys(require.cache).forEach(function(id) {
-//       if (/[\/\\].app[\/\\]/.test(id)) {
-//         console.log('clearing cache for', id);
-//         delete require.cache[id];
-//       }
-//     });
-//   });
-// });
-
+let server;
 hooks.done.tap('CompilerServer', (stats) => {
-  console.log(stats.toString());
+  const messages = formatMessages(stats);
 
-  Object.keys(require.cache).forEach(function(id) {
-    if (/[\/\\].app[\/\\]/.test(id)) {
-      console.log('clearing cache for', id);
-      delete require.cache[id];
+  if (!messages.errors.length && !messages.warnings.length) {
+    Log.event('compiled client and server...');
+  }
+
+  if (messages.errors.length) {
+    Log.error('failed to compile');
+    messages.errors.forEach(e => console.log(e));
+    return;
+  }
+
+  if (messages.warnings.length) {
+    Log.warn('compiled with warnings');
+    messages.warnings.forEach(w => console.log(w));
+  }
+
+  Object.keys(require.cache).forEach((mod) => {
+    if (/[\/\\].app[\/\\]/.test(mod)) {
+      delete require.cache[mod];
     }
   });
 
@@ -50,35 +58,18 @@ hooks.done.tap('CompilerServer', (stats) => {
     const bundlePath = path.join(serverConfig.output.path, serverConfig.output.filename);
 
     // Include server routes as a middleware
-    app.use(function(req, res, next) {
+    app.use((req, res, next) => {
       import(bundlePath).then((app) => app.default(req, res, next));
     });
 
     server = http.createServer(app);
-    server.listen(3000, 'localhost', function(err) {
+    server.listen(3000, 'localhost', (err) => {
       if (err) throw err;
 
       const addr = server.address();
-      console.log('Listening at http://%s:%d', addr.address, addr.port);
+      Log.ready(`listening at http://${addr.address}:${addr.port}`);
     });
   }
 });
 
-compilers[1].watch({}, () => {});
-
-// Anything else gets passed to the client app's server rendering
-// app.get('*', function(req, res, next) {
-//   require('./server/server-render')(req.path, function(err, page) {
-//     if (err) return next(err);
-//     res.send(page);
-//   });
-// });
-
-// Do "hot-reloading" of react stuff on the server
-// Throw away the cached client modules and let them be re-required next time
-// compiler.hooks.done.tap('hot-reload', () => {
-//   console.log("Clearing /client/ module cache from server");
-//   Object.keys(require.cache).forEach(function(id) {
-//     if (/[\/\\]client[\/\\]/.test(id)) delete require.cache[id];
-//   });
-// });
+serverCompiler.watch({}, () => {});

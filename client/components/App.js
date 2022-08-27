@@ -11,7 +11,7 @@ class App extends Component {
     const { count, dispatch } = this.props;
     return (
       <div>
-        <h1>Demo 2</h1>
+        <h1>Demo 1</h1>
         <p>{count.num}</p>
         <button
           className={styles.increment}

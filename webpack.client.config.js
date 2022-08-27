@@ -8,26 +8,12 @@ process.env.NODE_ENV = process.env.NODE_ENV || "development";
 export default {
   target: 'web',
   mode: 'development',
-  stats: 'errors-only',
   entry: ['webpack-hot-middleware/client', './client/app.js'],
   output: {
     path: __dirname,
     filename: 'bundle.js',
     publicPath: '/'
   },
-  plugins: [
-    new DefinePlugin({
-      'process.env': {
-        DEVELOPMENT: true
-      }
-    }),
-    new HotModuleReplacementPlugin({
-      overlay: {
-        sockIntegration: 'whm'
-      }
-    }),
-    new ReactRefreshWebpackPlugin(),
-  ],
   resolve: {
     extensions: ['.js']
   },
@@ -37,11 +23,12 @@ export default {
         test: /\.js$/,
         use: [
           {
-            loader: 'babel-loader',
+            loader: 'babel-loader?compact=false',
             options: {
               include: path.join(__dirname, 'client'),
               exclude: /node_modules/,
-              plugins: ['react-refresh/babel']
+              plugins: ['react-refresh/babel'],
+              compact: true
             }
           }
         ]
@@ -68,5 +55,18 @@ export default {
       }
 
     ]
-  }
+  },
+  plugins: [
+    new DefinePlugin({
+      'process.env': {
+        DEVELOPMENT: true
+      }
+    }),
+    new HotModuleReplacementPlugin({
+      overlay: {
+        sockIntegration: 'whm'
+      }
+    }),
+    new ReactRefreshWebpackPlugin(),
+  ],
 };
