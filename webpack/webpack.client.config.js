@@ -1,16 +1,16 @@
+import path from 'path';
 import { DefinePlugin, HotModuleReplacementPlugin } from 'webpack';
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
+import rules from './rules';
 
-import path from 'path';
-
-process.env.NODE_ENV = process.env.NODE_ENV || "development";
+const ROOT_PATH = path.resolve(__dirname, '../');
 
 export default {
   target: 'web',
   mode: 'development',
   entry: ['webpack-hot-middleware/client', './client/app.js'],
   output: {
-    path: __dirname,
+    path: ROOT_PATH,
     filename: 'bundle.js',
     publicPath: '/'
   },
@@ -18,43 +18,7 @@ export default {
     extensions: ['.js']
   },
   module: {
-    rules: [
-      {
-        test: /\.js$/,
-        use: [
-          {
-            loader: 'babel-loader?compact=false',
-            options: {
-              include: path.join(__dirname, 'client'),
-              exclude: /node_modules/,
-              plugins: ['react-refresh/babel'],
-              compact: true
-            }
-          }
-        ]
-      },
-
-      // CSS
-      {
-        test: /\.css$/,
-        use: [
-          'style-loader',
-          {
-            loader: 'css-loader',
-            options: {
-              importLoaders: 1,
-              modules: {
-                localIdentName: '[name]__[local]__[hash:base64:5]',
-                mode: 'global',
-                exportOnlyLocals: false,
-                mode: 'pure'
-              }
-            }
-          }
-        ]
-      }
-
-    ]
+    rules: rules(ROOT_PATH)
   },
   plugins: [
     new DefinePlugin({

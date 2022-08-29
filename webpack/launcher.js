@@ -4,7 +4,7 @@ import clientConfig from './webpack.client.config';
 import serverConfig from './webpack.server.config';
 import Log from '../log';
 
-export const runWebpack = (onServerCompilationDone) => {
+export const runWebpack = (onCompilationDone) => {
   const {
     hooks,
     compilers: [clientCompiler, serverCompiler]
@@ -18,22 +18,24 @@ export const runWebpack = (onServerCompilationDone) => {
     Log.wait('compiling server...');
   });
 
-  serverCompiler.hooks.done.tap('ServerCompiler', onServerCompilationDone);
-
   hooks.done.tap('WebpackLauncher', (stats) => {
     const messages = formatMessages(stats);
+    const hasErrors = messages.errors.length > 0;
+    const hasWarnings = messages.warnings.length > 0;
 
-    if (!messages.errors.length && !messages.warnings.length) {
-      Log.event('compiled client and server...');
+    onCompilationDone(hasErrors, hasWarnings);
+
+    if (!hasErrors && !hasWarnings) {
+      Log.event('successfully compiled');
     }
 
-    if (messages.errors.length) {
+    if (hasErrors) {
       Log.error('failed to compile');
       messages.errors.forEach(e => console.log(e));
       return;
     }
 
-    if (messages.warnings.length) {
+    if (hasWarnings) {
       Log.warn('compiled with warnings');
       messages.warnings.forEach(w => console.log(w));
     }

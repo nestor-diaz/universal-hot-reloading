@@ -12,15 +12,15 @@ const app = express();
 let server;
 
 const { clientCompiler } = runWebpack(() => {
-  // Only run this the first time, when the server hasn't been created.
+  const bundlePath = path.join(serverConfig.output.path, serverConfig.output.filename);
+
+  // Include server routes as a middleware
+  app.use((req, res, next) => {
+    import(bundlePath).then((app) => app.default(req, res, next));
+  });
+
+  // Only start the server once
   if (!server) {
-    const bundlePath = path.join(serverConfig.output.path, serverConfig.output.filename);
-
-    // Include server routes as a middleware
-    app.use((req, res, next) => {
-      import(bundlePath).then((app) => app.default(req, res, next));
-    });
-
     server = http.createServer(app);
     server.listen(3000, 'localhost', (err) => {
       if (err) throw err;
