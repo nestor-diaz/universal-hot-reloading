@@ -1,7 +1,8 @@
-const path = require('path');
-const nodeExternals = require('webpack-node-externals');
+import path from 'path';
+import nodeExternals from 'webpack-node-externals';
+import ServerRefreshWebpackPlugin from './plugins/serverRefreshWebpackPlugin';
 
-module.exports = {
+export default {
   target: 'node',
   mode: 'development',
   externals: [nodeExternals()],
@@ -47,6 +48,6 @@ module.exports = {
     ]
   },
   plugins: [
-    // new RequireCacheHotReloader()
+    new ServerRefreshWebpackPlugin()
   ]
 };

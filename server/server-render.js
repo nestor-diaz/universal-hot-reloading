@@ -1,12 +1,8 @@
 import App from '../client/components/App';
 import configureStore from '../client/store';
-import fs from 'fs';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { renderToString } from 'react-dom/server';
-
-// eslint-disable-next-line no-sync
-const template = fs.readFileSync(__dirname + '/../index.html', 'utf8');
 
 function renderApp(path, callback) {
   const store = configureStore();
@@ -18,11 +14,20 @@ function renderApp(path, callback) {
     </Provider>
   );
 
-  const page = template
-    .replace('<!-- CONTENT -->', rendered)
-    .replace('"-- STORES --"', JSON.stringify(state));
-
-  callback(null, page);
+  callback(null, `
+    <html>
+      <head>
+        <title>Sample App</title>
+      </head>
+      <body>
+        <div id="root">${rendered}</div>
+        <script type="text/javascript">
+          window.initialStoreData = ${JSON.stringify(state)};
+        </script>
+        <script src="/bundle.js"></script>
+      </body>
+    </html>
+  `);
 }
 
 export default renderApp;
