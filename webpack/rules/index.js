@@ -1,6 +1,17 @@
 import path from 'path';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 
-const cssLoaders = (isServer) => [
+// const postCssPlugins = [import('autoprefixer')];
+
+const cssLoaders = (rootPath, isProduction, isServer) => [
+  !isServer && 'style-loader',
+  isProduction && {
+    loader: MiniCssExtractPlugin.loader,
+    options: {
+      publicPath: rootPath,
+      hmr: false
+    }
+  },
   {
     loader: 'css-loader',
     options: {
@@ -12,10 +23,18 @@ const cssLoaders = (isServer) => [
         mode: 'pure'
       }
     }
-  }
-];
+  },
+  // {
+  //   loader: 'postcss-loader',
+  //   options: {
+  //     postcssOptions: {
+  //       plugins: []
+  //     }
+  //   }
+  // }
+].filter(Boolean);
 
-export default (rootPath, isServer = false) => [
+const rules = (rootPath, isProduction = false, isServer = false) => [
   {
     test: /\.js$/,
     use: [
@@ -24,15 +43,15 @@ export default (rootPath, isServer = false) => [
         options: {
           include: path.join(rootPath, 'src'),
           exclude: /node_modules/,
-          plugins: isServer ? [] : ['react-refresh/babel']
+          plugins: isServer || isProduction ? [] : ['react-refresh/babel']
         }
       }
     ]
   },
   {
     test: /\.css$/,
-    use: isServer ?
-      cssLoaders(isServer) :
-      ['style-loader', ...cssLoaders(isServer)]
+    use: cssLoaders(rootPath, isProduction, isServer)
   }
 ];
+
+export default rules;

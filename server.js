@@ -5,8 +5,14 @@ import webpackDevMiddleware from 'webpack-dev-middleware';
 import webpackHotMiddleware from 'webpack-hot-middleware';
 import Log from './log';
 import { runWebpack } from './webpack/launcher';
-import clientConfig from './webpack/webpack.client.config';
+import { OUTPUT_PUBLIC_PATH } from './webpack/webpack.client.config';
 import serverConfig from './webpack/webpack.server.config';
+
+if (!process.env.NODE_ENV) {
+  console.error('NODE_ENV process env variable is required.\n');
+  console.error('Must be one of:\n\tdevelopment or production\n');
+  process.exit();
+}
 
 const app = express();
 let server;
@@ -33,7 +39,7 @@ const { clientCompiler } = runWebpack(() => {
 
 // Serve hot-reloading bundle to client
 app.use(webpackDevMiddleware(clientCompiler, {
-  publicPath: clientConfig.output.publicPath,
+  publicPath: OUTPUT_PUBLIC_PATH,
   stats: "errors-only"
 }));
 

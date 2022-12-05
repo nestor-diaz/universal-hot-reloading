@@ -6,7 +6,8 @@
   "author": "Glen Mailer <glen@stainlessed.co.uk>",
   "license": "MIT",
   "scripts": {
-    "start": "babel-node server.js",
+    "start": "NODE_ENV=development babel-node server.js",
+    "build": "NODE_ENV=production",
     "lint": "eslint ."
   },
   "dependencies": {
@@ -34,6 +35,13 @@
     "webpack-dev-middleware": "5.3.3",
     "webpack-format-messages": "^3.0.1",
     "webpack-hot-middleware": "2.25.2",
-    "webpack-node-externals": "3.0.0"
+    "webpack-node-externals": "3.0.0",
+    "yargs": "^17.6.0"
+  },
+  "devDependencies": {
+    "@loadable/webpack-plugin": "^5.15.2",
+    "autoprefixer": "^10.4.12",
+    "mini-css-extract-plugin": "^2.6.1",
+    "postcss-loader": "^7.0.1"
   }
 }

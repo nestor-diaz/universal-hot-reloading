@@ -8,7 +8,7 @@ export const runWebpack = (onCompilationDone) => {
   const {
     hooks,
     compilers: [clientCompiler, serverCompiler]
-  } = webpack([clientConfig, serverConfig]);
+  } = webpack([clientConfig(), serverConfig]);
 
   clientCompiler.hooks.beforeCompile.tap('ClientCompiler', () => {
     Log.wait('compiling client...');

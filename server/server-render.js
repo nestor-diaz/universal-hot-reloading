@@ -24,7 +24,7 @@ function renderApp(path, callback) {
         <script type="text/javascript">
           window.initialStoreData = ${JSON.stringify(state)};
         </script>
-        <script src="/bundle.js"></script>
+        <script src="/client-bundle.js"></script>
       </body>
     </html>
   `);

@@ -18,7 +18,7 @@ export default {
     }
   },
   module: {
-    rules: rules(ROOT_PATH, true)
+    rules: rules(ROOT_PATH, false, true)
   },
   plugins: [
     new ServerRefreshWebpackPlugin()
