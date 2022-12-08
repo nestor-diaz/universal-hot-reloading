@@ -12,7 +12,7 @@ export default {
   entry: './server/app.js',
   output: {
     path: path.join(ROOT_PATH, '.app'),
-    filename: 'server-bundle.js',
+    filename: 'app.js',
     library: {
       type: 'commonjs2'
     }

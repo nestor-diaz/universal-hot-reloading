@@ -8,8 +8,7 @@ const cssLoaders = (rootPath, isProduction, isServer) => [
   isProduction && {
     loader: MiniCssExtractPlugin.loader,
     options: {
-      publicPath: rootPath,
-      hmr: false
+      publicPath: rootPath
     }
   },
   {

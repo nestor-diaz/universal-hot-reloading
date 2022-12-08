@@ -1,14 +1,14 @@
 import webpack from 'webpack';
 import formatMessages from 'webpack-format-messages';
-import clientConfig from './webpack.client.config';
-import serverConfig from './webpack.server.config';
+import { clientWebpackDevConfig } from './webpack.client.config';
+import serverWebpackConfig from './webpack.server.config';
 import Log from '../log';
 
 export const runWebpack = (onCompilationDone) => {
   const {
     hooks,
     compilers: [clientCompiler, serverCompiler]
-  } = webpack([clientConfig(), serverConfig]);
+  } = webpack([clientWebpackDevConfig, serverWebpackConfig]);
 
   clientCompiler.hooks.beforeCompile.tap('ClientCompiler', () => {
     Log.wait('compiling client...');

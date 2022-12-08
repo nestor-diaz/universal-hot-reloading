@@ -5,9 +5,12 @@
   "description": "React example",
   "author": "Glen Mailer <glen@stainlessed.co.uk>",
   "license": "MIT",
+  "main": "server/launcher.js",
   "scripts": {
+    "babel": "babel",
     "start": "NODE_ENV=development babel-node server.js",
-    "build": "NODE_ENV=production",
+    "build": "bash ./tasks/build.sh",
+    "build:webpack": "NODE_ENV=production babel-node webpack/build.js",
     "lint": "eslint ."
   },
   "dependencies": {
@@ -17,11 +20,14 @@
     "@babel/plugin-proposal-object-rest-spread": "^7.18.9",
     "@babel/preset-env": "7.18.2",
     "@babel/preset-react": "7.17.12",
+    "@loadable/server": "^5.15.2",
     "@pmmmwh/react-refresh-webpack-plugin": "0.5.7",
     "babel-eslint": "^8.2.3",
     "babel-loader": "8.2.5",
     "chalk": "4.1.2",
+    "config": "^3.3.8",
     "css-loader": "6.7.1",
+    "dotenv": "^16.0.3",
     "eslint": "^4.19.1",
     "eslint-plugin-react": "^7.8.1",
     "express": "4.18.1",

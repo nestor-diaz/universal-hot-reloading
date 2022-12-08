@@ -40,7 +40,14 @@ const { clientCompiler } = runWebpack(() => {
 // Serve hot-reloading bundle to client
 app.use(webpackDevMiddleware(clientCompiler, {
   publicPath: OUTPUT_PUBLIC_PATH,
-  stats: "errors-only"
+  stats: "errors-only",
+  writeToDisk(filePath) {
+    return /loadable-stats/.test(filePath);
+  }
 }));
 
-app.use(webpackHotMiddleware(clientCompiler, { log: false }));
+app.use(webpackHotMiddleware(clientCompiler, {
+  log: false,
+  path: `/__webpack_hmr`,
+  heartbeat: 10 * 1000
+}));

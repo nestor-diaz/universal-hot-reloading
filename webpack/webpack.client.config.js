@@ -6,14 +6,15 @@ import LoadablePlugin from '@loadable/webpack-plugin';
 import rules from './rules';
 
 const ROOT_PATH = path.resolve(__dirname, '../');
-const DIST_PATH = path.resolve(__dirname, ROOT_PATH, 'dist/static');
-const OUTPUT_FILENAME = 'app.[hash].js';
-const CLIENT_ENTRY = './client/app.js';
+const DIST_PATH = path.resolve(__dirname, ROOT_PATH, '.app/static');
+const JS_OUTPUT_FILENAME = 'app.[fullhash].js';
+const CSS_OUTPUT_FILENAME = 'app.[fullhash].css';
+const CLIENT_ENTRY = './src/app.js';
 export const OUTPUT_PUBLIC_PATH = '/';
 
 const prodPlugins = [
   new MiniCssExtractPlugin({
-    filename: OUTPUT_FILENAME
+    filename: CSS_OUTPUT_FILENAME
   }),
   new LoadablePlugin()
 ];
@@ -25,7 +26,7 @@ const devPlugins = [
     }
   }),
   new ReactRefreshWebpackPlugin(),
-  // new LoadablePlugin()
+  new LoadablePlugin()
 ];
 
 const clientWebpackConfig = (isProduction = false) => ({
@@ -35,8 +36,8 @@ const clientWebpackConfig = (isProduction = false) => ({
     [CLIENT_ENTRY] :
     ['webpack-hot-middleware/client', CLIENT_ENTRY],
   output: {
-    path: isProduction ? DIST_PATH : ROOT_PATH,
-    filename: isProduction ? OUTPUT_FILENAME : 'client-bundle.js',
+    path: DIST_PATH,
+    filename: isProduction ? JS_OUTPUT_FILENAME : 'client-bundle.js',
     publicPath: OUTPUT_PUBLIC_PATH
   },
   resolve: {
@@ -58,4 +59,7 @@ const clientWebpackConfig = (isProduction = false) => ({
   ]
 });
 
-export default clientWebpackConfig;
+export const clientWebpackDevConfig = clientWebpackConfig();
+export const clientWebpackProdConfig = clientWebpackConfig(true);
+
+// export default configs;
